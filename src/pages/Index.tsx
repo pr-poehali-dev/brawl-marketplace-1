@@ -3,11 +3,30 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isFree, setIsFree] = useState(false);
+  const { toast } = useToast();
+  
+  const [newProduct, setNewProduct] = useState({
+    title: '',
+    price: '',
+    category: 'gems',
+    description: '',
+    emoji: '💎',
+    seller: 'Вы'
+  });
 
-  const products = [
+  const [products, setProducts] = useState([
     {
       id: 1,
       title: '💎 10000 Геммов',
@@ -62,7 +81,46 @@ const Index = () => {
       seller: 'BoostTeam',
       rating: '4.7',
     },
-  ];
+  ]);
+
+  const handleCreateProduct = () => {
+    if (!newProduct.title || (!isFree && !newProduct.price)) {
+      toast({
+        title: '⚠️ Ошибка',
+        description: 'Заполните название и цену товара',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    const product = {
+      id: products.length + 1,
+      title: `${newProduct.emoji} ${newProduct.title}`,
+      price: isFree ? 'Бесплатно' : `${newProduct.price} ₽`,
+      category: newProduct.category,
+      image: newProduct.emoji,
+      seller: newProduct.seller,
+      rating: '5.0'
+    };
+
+    setProducts([product, ...products]);
+    setIsCreateDialogOpen(false);
+    
+    toast({
+      title: '✅ Товар создан!',
+      description: 'Ваш товар появился в каталоге'
+    });
+
+    setNewProduct({
+      title: '',
+      price: '',
+      category: 'gems',
+      description: '',
+      emoji: '💎',
+      seller: 'Вы'
+    });
+    setIsFree(false);
+  };
 
   const categories = [
     { id: 'gems', name: 'Геммы', icon: '💎' },
@@ -118,7 +176,10 @@ const Index = () => {
               </button>
             </div>
 
-            <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 hover-scale glow-effect">
+            <Button 
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 hover-scale glow-effect"
+            >
               <Icon name="Plus" size={20} className="mr-2" />
               Добавить товар
             </Button>
@@ -287,6 +348,116 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">🎮 Создать товар</DialogTitle>
+            <DialogDescription>
+              Добавьте свой товар в маркетплейс Brawl Stars
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="emoji">Эмодзи товара</Label>
+              <Select value={newProduct.emoji} onValueChange={(value) => setNewProduct({...newProduct, emoji: value})}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="💎">💎 Геммы</SelectItem>
+                  <SelectItem value="🎮">🎮 Аккаунт</SelectItem>
+                  <SelectItem value="🔥">🔥 Скин</SelectItem>
+                  <SelectItem value="⭐">⭐ Бравл Пасс</SelectItem>
+                  <SelectItem value="🎨">🎨 Контент</SelectItem>
+                  <SelectItem value="🚀">🚀 Услуга</SelectItem>
+                  <SelectItem value="🎁">🎁 Подарок</SelectItem>
+                  <SelectItem value="⚔️">⚔️ Буст</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="title">Название товара *</Label>
+              <Input
+                id="title"
+                placeholder="Например: 10000 Геммов"
+                value={newProduct.title}
+                onChange={(e) => setNewProduct({...newProduct, title: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="category">Категория</Label>
+              <Select value={newProduct.category} onValueChange={(value) => setNewProduct({...newProduct, category: value})}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="gems">Геммы</SelectItem>
+                  <SelectItem value="accounts">Аккаунты</SelectItem>
+                  <SelectItem value="skins">Скины</SelectItem>
+                  <SelectItem value="pass">Бравл Пасс</SelectItem>
+                  <SelectItem value="content">Контент</SelectItem>
+                  <SelectItem value="services">Услуги</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Описание</Label>
+              <Textarea
+                id="description"
+                placeholder="Расскажите о вашем товаре подробнее..."
+                value={newProduct.description}
+                onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                rows={4}
+              />
+            </div>
+
+            <div className="flex items-center space-x-2 p-4 bg-accent/10 rounded-lg">
+              <Switch
+                id="free"
+                checked={isFree}
+                onCheckedChange={setIsFree}
+              />
+              <Label htmlFor="free" className="cursor-pointer">
+                🎁 Сделать товар бесплатным
+              </Label>
+            </div>
+
+            {!isFree && (
+              <div className="space-y-2">
+                <Label htmlFor="price">Цена (₽) *</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  placeholder="999"
+                  value={newProduct.price}
+                  onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                />
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                onClick={handleCreateProduct}
+                className="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90 glow-effect"
+              >
+                <Icon name="Check" size={20} className="mr-2" />
+                Создать товар
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setIsCreateDialogOpen(false)}
+              >
+                Отмена
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
