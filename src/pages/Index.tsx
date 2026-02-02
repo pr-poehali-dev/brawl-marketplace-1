@@ -23,7 +23,8 @@ const Index = () => {
     category: 'gems',
     description: '',
     emoji: '💎',
-    seller: 'Вы'
+    seller: 'Вы',
+    telegramId: ''
   });
 
   const [products, setProducts] = useState([]);
@@ -38,6 +39,15 @@ const Index = () => {
       return;
     }
 
+    if (!newProduct.telegramId) {
+      toast({
+        title: '⚠️ Ошибка',
+        description: 'Укажите ваш Telegram ID для связи с покупателями',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     const product = {
       id: products.length + 1,
       title: `${newProduct.emoji} ${newProduct.title}`,
@@ -45,7 +55,8 @@ const Index = () => {
       category: newProduct.category,
       image: newProduct.emoji,
       seller: newProduct.seller,
-      rating: '5.0'
+      rating: '5.0',
+      telegramId: newProduct.telegramId
     };
 
     setProducts([product, ...products]);
@@ -62,7 +73,8 @@ const Index = () => {
       category: 'gems',
       description: '',
       emoji: '💎',
-      seller: 'Вы'
+      seller: 'Вы',
+      telegramId: ''
     });
     setIsFree(false);
   };
@@ -237,7 +249,12 @@ const Index = () => {
 
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold text-primary">{product.price}</span>
-                      <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
+                      <Button 
+                        size="sm" 
+                        className="bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+                        onClick={() => window.open(`https://t.me/${product.telegramId}`, '_blank')}
+                      >
+                        <Icon name="Send" size={16} className="mr-1" />
                         Купить
                       </Button>
                     </div>
@@ -402,6 +419,25 @@ const Index = () => {
                 />
               </div>
             )}
+
+            <div className="space-y-2">
+              <Label htmlFor="telegramId">Telegram ID для связи *</Label>
+              <div className="flex gap-2">
+                <span className="flex items-center justify-center px-3 bg-muted rounded-md text-muted-foreground">
+                  @
+                </span>
+                <Input
+                  id="telegramId"
+                  placeholder="username"
+                  value={newProduct.telegramId}
+                  onChange={(e) => setNewProduct({...newProduct, telegramId: e.target.value})}
+                  className="flex-1"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                📱 Покупатели свяжутся с вами через Telegram
+              </p>
+            </div>
 
             <div className="flex gap-3 pt-4">
               <Button
