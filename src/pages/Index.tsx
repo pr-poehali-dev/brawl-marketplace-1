@@ -26,62 +26,7 @@ const Index = () => {
     seller: 'Вы'
   });
 
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      title: '💎 10000 Геммов',
-      price: '5499 ₽',
-      category: 'gems',
-      image: '💎',
-      seller: 'ProGems',
-      rating: '4.9',
-    },
-    {
-      id: 2,
-      title: '🎮 Аккаунт 50000 🏆',
-      price: '8999 ₽',
-      category: 'accounts',
-      image: '🎮',
-      seller: 'StarSeller',
-      rating: '5.0',
-    },
-    {
-      id: 3,
-      title: '⭐ Бравл Пасс',
-      price: '899 ₽',
-      category: 'pass',
-      image: '⭐',
-      seller: 'BrawlShop',
-      rating: '4.8',
-    },
-    {
-      id: 4,
-      title: '🎨 Набор обложек YouTube',
-      price: '1299 ₽',
-      category: 'content',
-      image: '🎨',
-      seller: 'DesignPro',
-      rating: '4.9',
-    },
-    {
-      id: 5,
-      title: '🔥 Легендарный скин Crow',
-      price: '2499 ₽',
-      category: 'skins',
-      image: '🔥',
-      seller: 'SkinMaster',
-      rating: '5.0',
-    },
-    {
-      id: 6,
-      title: '🚀 Прокачка персонажа',
-      price: '699 ₽',
-      category: 'services',
-      image: '🚀',
-      seller: 'BoostTeam',
-      rating: '4.7',
-    },
-  ]);
+  const [products, setProducts] = useState([]);
 
   const handleCreateProduct = () => {
     if (!newProduct.title || (!isFree && !newProduct.price)) {
@@ -248,41 +193,59 @@ const Index = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product, idx) => (
-              <Card 
-                key={product.id}
-                className="overflow-hidden border-primary/20 hover:border-primary/50 transition-all hover-scale animate-fade-in group"
-                style={{ animationDelay: `${idx * 100}ms` }}
+          {products.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="text-8xl mb-6 animate-float">📦</div>
+              <h3 className="text-2xl font-bold mb-3">Пока нет товаров</h3>
+              <p className="text-muted-foreground mb-6">
+                Станьте первым продавцом на Brawl Marketplace!
+              </p>
+              <Button 
+                onClick={() => setIsCreateDialogOpen(true)}
+                size="lg"
+                className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 hover-scale glow-effect"
               >
-                <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-8xl group-hover:scale-110 transition-transform">
-                  {product.image}
-                </div>
-                
-                <div className="p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h4 className="font-bold text-lg mb-1">{product.title}</h4>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Icon name="User" size={14} />
-                        {product.seller}
-                      </p>
+                <Icon name="Plus" size={24} className="mr-2" />
+                Добавить первый товар
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.map((product, idx) => (
+                <Card 
+                  key={product.id}
+                  className="overflow-hidden border-primary/20 hover:border-primary/50 transition-all hover-scale animate-fade-in group"
+                  style={{ animationDelay: `${idx * 100}ms` }}
+                >
+                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-8xl group-hover:scale-110 transition-transform">
+                    {product.image}
+                  </div>
+                  
+                  <div className="p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h4 className="font-bold text-lg mb-1">{product.title}</h4>
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          <Icon name="User" size={14} />
+                          {product.seller}
+                        </p>
+                      </div>
+                      <Badge className="bg-accent/20 text-accent border-accent/30">
+                        ⭐ {product.rating}
+                      </Badge>
                     </div>
-                    <Badge className="bg-accent/20 text-accent border-accent/30">
-                      ⭐ {product.rating}
-                    </Badge>
-                  </div>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-primary">{product.price}</span>
-                    <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
-                      Купить
-                    </Button>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-primary">{product.price}</span>
+                      <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
+                        Купить
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
